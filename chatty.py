@@ -165,6 +165,11 @@ if __name__ == '__main__':
         switch = count(switch)
         msg = input('\n@@ %s: ' % toWho)
         if msg == 'help':
+            print()
+            print('- @img@path')
+            print('- @fil@path')
+            print('- @vid@path')
+            print()
             print('- cls')
             print('- who')
             print('- open g')
