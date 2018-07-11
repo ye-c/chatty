@@ -1,6 +1,6 @@
 ## chatty 
 
-A wechat app on terminal/cmd.
+A wechat app on terminal or cmd.
 
 
 ## Login
