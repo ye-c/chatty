@@ -75,6 +75,6 @@ Login successfully as ...
 - show g                # show group list
 - call who/me           # talk to someone
 - call g group          # talk to a group
-- quit                  # logout
+- quit                  # quit
 
 ```
