@@ -69,7 +69,7 @@ def download_group_files(msg):
         global imgshow
         imgshow = path
     if is_open_group:
-        format_print(msg.User.NickName, msg.User.RemarkName,
+        format_print(msg.User.NickName, msg.User.actualNickName,
                      msg.fileName, typename)
     msg.download(path)
 
