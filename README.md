@@ -61,6 +61,11 @@ Login successfully as ...
 
 ```
 @@ me: help
+
+- @img@path				# send img
+- @fil@path				# send file
+- @vid@path				# send video
+
 - cls                   # windows cls, linux clear
 - who                   # show the detail information you are talking to
 - open g                # show group message
@@ -71,4 +76,5 @@ Login successfully as ...
 - call who/me           # talk to someone
 - call g group          # talk to a group
 - quit                  # logout
+
 ```
