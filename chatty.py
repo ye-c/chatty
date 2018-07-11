@@ -7,6 +7,7 @@ import itchat
 from itchat.content import *
 from PIL import Image
 
+
 MsgType_Dict = {3: 'img', -1: 'file'}
 is_open_group = True
 imgshow = ''
@@ -20,7 +21,8 @@ def format_print(nickName='', remarkName='', content='', msgtype='', isGroupChat
               (tnow, nickName, remarkName, msgtype, content))
     else:
         print('\r%s | %s%s: %s%s\n' %
-              (tnow, nickName, ' (%s)' if remarkName.strip() else '', msgtype, content))
+              (tnow, nickName, ' (%s)' % remarkName if remarkName.strip() else '',
+               msgtype, content))
 
 
 @itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat=True)
