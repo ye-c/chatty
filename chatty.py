@@ -7,23 +7,20 @@ import itchat
 from itchat.content import *
 from PIL import Image
 
-MsgType_Dict = {3: 'img', -1: 'files'}
+MsgType_Dict = {3: 'img', -1: 'file'}
 is_open_group = True
 imgshow = ''
 
 
-def format_print(nickName='', remarkName='', content='', msgtype=None):
+def format_print(nickName='', remarkName='', content='', msgtype='', isGroupChat=False):
     tnow = time.strftime('%H:%M:%S', time.localtime(time.time()))
-    if msgtype:
-        if msgtype == 'group':
-            print('\r%s | [%s] %s: %s\n' %
-                  (tnow, nickName, remarkName, content))
-        else:
-            print('\r%s | %s%s: [%s] %s\n' %
-                  (tnow, nickName, '(%s)' % remarkName if remarkName else '', msgtype, content))
+    msgtype = '[%s] ' % msgtype if msgtype else ''
+    if isGroupChat:
+        print('\r%s | [%s] %s: %s%s\n' %
+              (tnow, nickName, remarkName, msgtype, content))
     else:
-        print('\r%s | %s%s: %s\n' %
-              (tnow, nickName, '(%s)' % remarkName if remarkName else '', content))
+        print('\r%s | %s%s: %s%s\n' %
+              (tnow, nickName, ' (%s)' if remarkName.strip() else '', msgtype, content))
 
 
 @itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat=True)
@@ -56,7 +53,7 @@ def download_friend_files(msg):
 @itchat.msg_register(TEXT, isGroupChat=True)
 def print_group_msg(msg):
     if is_open_group:
-        format_print(msg.User.NickName, msg.actualNickName, msg.text, 'group')
+        format_print(msg.User.NickName, msg.actualNickName, msg.text, '', True)
 
 
 @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isGroupChat=True)
@@ -70,7 +67,7 @@ def download_group_files(msg):
         imgshow = path
     if is_open_group:
         format_print(msg.User.NickName, msg.actualNickName,
-                     msg.fileName, typename)
+                     msg.fileName, typename, True)
     msg.download(path)
 
 
@@ -147,8 +144,8 @@ def count(n):
 if __name__ == '__main__':
     if not os.path.exists('img'):
         os.mkdir('img')
-    if not os.path.exists('files'):
-        os.mkdir('files')
+    if not os.path.exists('file'):
+        os.mkdir('file')
 
     cmd_qr = True if platform.system() == "Windows" else 2
     itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
