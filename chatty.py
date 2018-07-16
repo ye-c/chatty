@@ -9,6 +9,7 @@ from PIL import Image
 
 
 MsgType_Dict = {3: 'img', -1: 'file'}
+download_dir = 'download'
 is_open_group = True
 imgshow = ''
 
@@ -37,15 +38,17 @@ def print_friend_msg(msg):
 
 @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isFriendChat=True)
 def download_friend_files(msg):
+    tnow = time.strftime('%y%m%d%H%M%S', time.localtime(time.time()))
+    filename = '%s.%s' % (tnow, msg.fileName.split('.')[1])
     typename = MsgType_Dict[
         msg.MsgType] if msg.MsgType in MsgType_Dict else MsgType_Dict[-1]
     if msg.ToUserName == 'filehelper':
-        path = '%s/filehelper-%s' % (typename, msg.fileName)
-        print('\r>> filehelper: [%s] %s\n' % (typename, msg.fileName))
+        path = '%s/filehelper-%s' % (download_dir, filename)
+        print('\r>> filehelper: [%s] %s\n' % (typename, filename))
     else:
-        path = '%s/%s-%s' % (typename, msg.User.NickName, msg.fileName)
+        path = '%s/%s-%s' % (download_dir, msg.User.NickName, filename)
         format_print(msg.User.NickName, msg.User.RemarkName,
-                     msg.fileName, typename)
+                     filename, typename)
     if typename == 'img':
         global imgshow
         imgshow = path
@@ -60,17 +63,30 @@ def print_group_msg(msg):
 
 @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isGroupChat=True)
 def download_group_files(msg):
+    tnow = time.strftime('%y%m%d%H%M%S', time.localtime(time.time()))
+    filename = '%s.%s' % (tnow, msg.fileName.split('.')[1])
     typename = MsgType_Dict[
         msg.MsgType] if msg.MsgType in MsgType_Dict else MsgType_Dict[-1]
-    path = '%s/%s-%s-%s' % (typename, msg.User.NickName,
-                            msg.actualNickName, msg.fileName)
+    path = '%s/%s-%s-%s' % (download_dir, msg.User.NickName,
+                            msg.actualNickName, filename)
     if typename == 'img':
         global imgshow
         imgshow = path
     if is_open_group:
         format_print(msg.User.NickName, msg.actualNickName,
-                     msg.fileName, typename, True)
+                     filename, typename, True)
     msg.download(path)
+
+
+@itchat.msg_register('Note')
+def get_note(msg):
+    if any(s in msg['Text'] for s in (u'红包', u'转账')):
+        format_print(msg.User.NickName, msg.User.RemarkName, msg.Text, '红包')
+        format_print(msg.User.NickName, msg.User.RemarkName, msg.Text, '红包')
+        format_print(msg.User.NickName, msg.User.RemarkName, msg.Text, '红包')
+    else:
+        format_print(msg.User.NickName, msg.User.RemarkName,
+                     msg.Text, 'Note')
 
 
 def clear():
@@ -144,10 +160,8 @@ def count(n):
 
 
 if __name__ == '__main__':
-    if not os.path.exists('img'):
-        os.mkdir('img')
-    if not os.path.exists('file'):
-        os.mkdir('file')
+    if not os.path.exists(download_dir):
+        os.mkdir(download_dir)
 
     cmd_qr = True if platform.system() == "Windows" else 2
     itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
