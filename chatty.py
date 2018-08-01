@@ -3,6 +3,7 @@ import os
 import signal
 import time
 import platform
+import readline
 import itchat
 from itchat.content import *
 from PIL import Image
