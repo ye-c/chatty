@@ -8,11 +8,11 @@ import itchat
 from itchat.content import *
 from PIL import Image
 
-
 MsgType_Dict = {3: 'img', -1: 'file'}
 download_dir = 'download'
 is_open_group = True
 imgshow = ''
+itchat_status = False
 
 
 def format_print(nickName='', remarkName='', content='', msgtype='', isGroupChat=False):
@@ -139,7 +139,7 @@ def call(toWho, UserCode, cmd, switch):
                     print('->', toWho)
                     break
         else:
-            print('->', 'Non-existent Group')
+            print('-> Non-existent Group')
     return switch - 1, toWho, UserCode
 
 
@@ -160,6 +160,29 @@ def count(n):
     return n
 
 
+def itchat_run():
+    global itchat_status
+    n = 0
+    while True:
+        try:
+            if n > 10:
+                tnow = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                print('\r%s | Login times exceeded limit, log out!' % tnow)
+                itchat_status = False
+                break
+            if itchat_status is False:
+                cmd_qr = True if platform.system() == "Windows" else 2
+                itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
+                                  statusStorageDir='mychat.pkl')
+                itchat_status = True
+            itchat.run()
+            itchat_status = False
+            time.sleep(10)
+        except Exception as e:
+            print(e)
+            n += 1
+
+
 if __name__ == '__main__':
     if not os.path.exists(download_dir):
         os.mkdir(download_dir)
@@ -167,7 +190,8 @@ if __name__ == '__main__':
     cmd_qr = True if platform.system() == "Windows" else 2
     itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
                       statusStorageDir='mychat.pkl')
-    wechat = threading.Thread(target=itchat.run, args=())
+    itchat_status = True
+    wechat = threading.Thread(target=itchat_run, args=())
     wechat.setDaemon(True)
     wechat.start()
 
@@ -178,7 +202,9 @@ if __name__ == '__main__':
     while True:
         switch = count(switch)
         msg = input('\n@@ %s: ' % toWho)
-        if msg == 'help':
+        if msg == 'quit' or itchat_status is False:
+            break
+        elif msg == 'help':
             print()
             print('- @img@path')
             print('- @fil@path')
@@ -213,7 +239,5 @@ if __name__ == '__main__':
             switch = showGroups(switch)
         elif msg.split(' ')[0] == 'call':
             switch, toWho, UserCode = call(toWho, UserCode, msg, switch)
-        elif msg == 'quit':
-            break
         else:
             itchat.send(msg, toUserName=UserCode)
