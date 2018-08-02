@@ -56,7 +56,7 @@ def download_friend_files(msg):
     msg.download(path)
 
 
-@itchat.msg_register(TEXT, isGroupChat=True)
+@itchat.msg_register([TEXT, SHARING], isGroupChat=True)
 def print_group_msg(msg):
     if is_open_group:
         format_print(msg.User.NickName, msg.actualNickName, msg.text, '', True)
