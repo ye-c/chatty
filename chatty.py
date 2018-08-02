@@ -56,7 +56,7 @@ def download_friend_files(msg):
     msg.download(path)
 
 
-@itchat.msg_register([TEXT, SHARING], isGroupChat=True)
+@itchat.msg_register([TEXT, NOTE, SHARING], isGroupChat=True)
 def print_group_msg(msg):
     if is_open_group:
         format_print(msg.User.NickName, msg.actualNickName, msg.text, '', True)
@@ -164,23 +164,29 @@ def itchat_run():
     global itchat_status
     n = 0
     while True:
-        try:
-            if n > 10:
-                tnow = time.strftime('%H:%M:%S', time.localtime(time.time()))
-                print('\r%s | Login times exceeded limit, log out!' % tnow)
-                itchat_status = False
-                break
-            if itchat_status is False:
-                cmd_qr = True if platform.system() == "Windows" else 2
-                itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
-                                  statusStorageDir='mychat.pkl')
-                itchat_status = True
-            itchat.run()
+        if n > 10:
+            tnow = time.strftime('%H:%M:%S', time.localtime(time.time()))
+            print('\r%s | Login times exceeded limit, log out!' % tnow)
             itchat_status = False
-            time.sleep(10)
+            break
+        if itchat_status is False:
+            cmd_qr = True if platform.system() == "Windows" else 2
+            itchat.auto_login(hotReload=True, enableCmdQR=cmd_qr,
+                              statusStorageDir='mychat.pkl')
+            itchat_status = True
+
+        try:
+            itchat.run()
         except Exception as e:
             print(e)
-            n += 1
+            break
+        finally:
+            itchat_status = False
+            
+        n += 1
+        tnow = time.strftime('%H:%M:%S', time.localtime(time.time()))
+        print('\r%s | Wait for 10 seconds to reload. ' % tnow)
+        time.sleep(10)
 
 
 if __name__ == '__main__':
