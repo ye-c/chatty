@@ -1,4 +1,4 @@
-## chatty 
+# chatty 
 
 A wechat app on terminal or cmd base on itchat.
 
@@ -49,3 +49,12 @@ Login successfully as ...
 - quit                  # quit
 
 ```
+
+# Iris
+
+You can control your laptop by WeChat. 
+
+Example:
+
+1. Send 'take a photo' to yourself, the laptop will make it done, and send the photo back. 
+2. Send 'shooting a video' to yourself, the laptop will make it done, and send the video back.
